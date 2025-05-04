@@ -1,0 +1,1 @@
+"sudo ./build.sh" to execute program
