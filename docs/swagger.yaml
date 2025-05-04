@@ -1,0 +1,281 @@
+basePath: /profile
+definitions:
+  models.DeletePerson:
+    properties:
+      guid:
+        example: ewqehQWE231u-Snu3h21sj-321s
+        type: string
+    required:
+    - guid
+    type: object
+  models.GetPerson:
+    properties:
+      age:
+        example: 28
+        type: integer
+      gender:
+        example: male
+        type: string
+      greater:
+        example: true
+        type: boolean
+      name:
+        example: John
+        type: string
+      nationalize:
+        example: US
+        type: string
+      page:
+        example: 3
+        type: integer
+      page_size:
+        example: 10
+        type: integer
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Wick
+        type: string
+    required:
+    - page
+    - page_size
+    type: object
+  models.NewPerson:
+    properties:
+      age:
+        maximum: 130
+        minimum: 0
+        type: integer
+      gender:
+        maxLength: 6
+        type: string
+      guid:
+        type: string
+      name:
+        example: Igor
+        maxLength: 20
+        minLength: 1
+        type: string
+      nationalize:
+        maxLength: 10
+        type: string
+      patronymic:
+        example: Vladimirovich
+        maxLength: 25
+        minLength: 1
+        type: string
+      surname:
+        example: Zaycev
+        maxLength: 30
+        minLength: 1
+        type: string
+    required:
+    - name
+    - surname
+    type: object
+  models.UpdatedPerson:
+    properties:
+      age:
+        example: 33
+        maximum: 130
+        minimum: 0
+        type: integer
+      gender:
+        example: male
+        maxLength: 6
+        type: string
+      guid:
+        example: 3EWQbnsu-2!IHY389-ewqh312
+        type: string
+      nationalize:
+        example: RU
+        maxLength: 3
+        type: string
+      new_name:
+        example: Valeriy
+        maxLength: 20
+        minLength: 1
+        type: string
+      new_surname:
+        example: Popov
+        maxLength: 30
+        minLength: 1
+        type: string
+      patronymic:
+        example: Valentinovich
+        maxLength: 25
+        minLength: 1
+        type: string
+    required:
+    - guid
+    type: object
+  response.ErrorResponse:
+    properties:
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+  response.SuccessResponse:
+    properties:
+      data: {}
+      status:
+        type: integer
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: API Server for Effective Mobile application
+  title: Effective Mobile Test API
+  version: "0.1"
+paths:
+  /create:
+    post:
+      consumes:
+      - application/json
+      description: Accepts name, surname and patronymic and creates profile
+      operationId: create-profile
+      parameters:
+      - description: name and surname is necessary
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewPerson'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create
+      tags:
+      - profile
+  /delete:
+    delete:
+      consumes:
+      - application/json
+      description: Accepts profile GUID and remove this profile
+      operationId: delete-profile
+      parameters:
+      - description: GUID is necessary
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeletePerson'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete
+      tags:
+      - profile
+  /get:
+    post:
+      consumes:
+      - application/json
+      description: Accepts filters and outputs profiles based on them
+      operationId: get-profiles
+      parameters:
+      - description: page and size of page is necessary
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.GetPerson'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get
+      tags:
+      - profile
+  /update:
+    patch:
+      consumes:
+      - application/json
+      description: Accepts profile GUID and remove this profile
+      operationId: update-profile
+      parameters:
+      - description: GUID is necessary
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatedPerson'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update
+      tags:
+      - profile
+swagger: "2.0"

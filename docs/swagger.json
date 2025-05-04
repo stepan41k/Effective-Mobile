@@ -1,0 +1,405 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Server for Effective Mobile application",
+        "title": "Effective Mobile Test API",
+        "contact": {},
+        "version": "0.1"
+    },
+    "host": "localhost:8082",
+    "basePath": "/profile",
+    "paths": {
+        "/create": {
+            "post": {
+                "description": "Accepts name, surname and patronymic and creates profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Create",
+                "operationId": "create-profile",
+                "parameters": [
+                    {
+                        "description": "name and surname is necessary",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.NewPerson"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/delete": {
+            "delete": {
+                "description": "Accepts profile GUID and remove this profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Delete",
+                "operationId": "delete-profile",
+                "parameters": [
+                    {
+                        "description": "GUID is necessary",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeletePerson"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SuccessResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/get": {
+            "post": {
+                "description": "Accepts filters and outputs profiles based on them",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get",
+                "operationId": "get-profiles",
+                "parameters": [
+                    {
+                        "description": "page and size of page is necessary",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GetPerson"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SuccessResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/update": {
+            "patch": {
+                "description": "Accepts profile GUID and remove this profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Update",
+                "operationId": "update-profile",
+                "parameters": [
+                    {
+                        "description": "GUID is necessary",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdatedPerson"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.DeletePerson": {
+            "type": "object",
+            "required": [
+                "guid"
+            ],
+            "properties": {
+                "guid": {
+                    "type": "string",
+                    "example": "ewqehQWE231u-Snu3h21sj-321s"
+                }
+            }
+        },
+        "models.GetPerson": {
+            "type": "object",
+            "required": [
+                "page",
+                "page_size"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "example": 28
+                },
+                "gender": {
+                    "type": "string",
+                    "example": "male"
+                },
+                "greater": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "nationalize": {
+                    "type": "string",
+                    "example": "US"
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "page_size": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "patronymic": {
+                    "type": "string",
+                    "example": "Ivanovich"
+                },
+                "surname": {
+                    "type": "string",
+                    "example": "Wick"
+                }
+            }
+        },
+        "models.NewPerson": {
+            "type": "object",
+            "required": [
+                "name",
+                "surname"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "maximum": 130,
+                    "minimum": 0
+                },
+                "gender": {
+                    "type": "string",
+                    "maxLength": 6
+                },
+                "guid": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 1,
+                    "example": "Igor"
+                },
+                "nationalize": {
+                    "type": "string",
+                    "maxLength": 10
+                },
+                "patronymic": {
+                    "type": "string",
+                    "maxLength": 25,
+                    "minLength": 1,
+                    "example": "Vladimirovich"
+                },
+                "surname": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1,
+                    "example": "Zaycev"
+                }
+            }
+        },
+        "models.UpdatedPerson": {
+            "type": "object",
+            "required": [
+                "guid"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "maximum": 130,
+                    "minimum": 0,
+                    "example": 33
+                },
+                "gender": {
+                    "type": "string",
+                    "maxLength": 6,
+                    "example": "male"
+                },
+                "guid": {
+                    "type": "string",
+                    "example": "3EWQbnsu-2!IHY389-ewqh312"
+                },
+                "nationalize": {
+                    "type": "string",
+                    "maxLength": 3,
+                    "example": "RU"
+                },
+                "new_name": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 1,
+                    "example": "Valeriy"
+                },
+                "new_surname": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1,
+                    "example": "Popov"
+                },
+                "patronymic": {
+                    "type": "string",
+                    "maxLength": 25,
+                    "minLength": 1,
+                    "example": "Valentinovich"
+                }
+            }
+        },
+        "response.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "status": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

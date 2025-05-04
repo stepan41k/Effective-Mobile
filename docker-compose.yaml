@@ -1,0 +1,19 @@
+version: "3.0"
+
+services:
+  profiles-library-service:
+    build: ./
+    command: ./wait-for-postgres.sh psql-profiles-library ./profiles-library-service
+    ports:
+      - 8082:8082
+    depends_on:
+      - psql-profiles-library
+    environment:
+      - DB_PASSWORD=${MY_DB_PASSWORD}
+  psql-profiles-library:
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=${MY_DB_PASSWORD}
+    ports:
+      - 5484:5432
