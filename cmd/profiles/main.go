@@ -64,10 +64,10 @@ func main() {
 	))
 
 	router.Route("/profile", func(r chi.Router) {
-		r.Post("/get", handler.GetProfiles(context.Background()))
-		r.Delete("/delete", handler.DeleteProfile(context.Background()))
+		r.Post("/take", handler.TakeProfiles(context.Background()))
+		r.Delete("/remove", handler.RemoveProfile(context.Background()))
 		r.Patch("/update", handler.UpdateProfile(context.Background()))
-		r.Post("/create", handler.NewProfile(context.Background()))
+		r.Post("/new", handler.NewProfile(context.Background()))
 	})
 
 	log.Info("starting server")

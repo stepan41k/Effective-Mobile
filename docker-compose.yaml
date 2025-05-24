@@ -16,4 +16,4 @@ services:
     environment:
       - POSTGRES_PASSWORD=${MY_DB_PASSWORD}
     ports:
-      - 5484:5432
+      - 5494:5432

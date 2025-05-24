@@ -1,0 +1,4 @@
+DROP TYPE gen;
+
+ALTER TABLE profiles
+ALTER COLUMN gender TYPE TEXT;

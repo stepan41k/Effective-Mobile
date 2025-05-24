@@ -14,10 +14,10 @@ import (
 )
 
 type Profile interface {
-	GetProfiles(ctx context.Context, person models.GetPerson) (persons []models.Person, err error)
-	DeleteProfile(ctx context.Context, person models.DeletePerson) (guid []byte, err error)
+	TakeProfiles(ctx context.Context, person models.GetPerson) (persons []models.Person, err error)
+	RemoveProfile(ctx context.Context, person models.DeletePerson) (guid []byte, err error)
 	UpdateProfile(ctx context.Context, person models.UpdatedPerson) (guid []byte, err error)
-	NewProfile(ctx context.Context, person models.NewPerson) (guid []byte, err error)
+	NewProfile(ctx context.Context, person models.EnrichedPerson) (guid []byte, err error)
 }
 
 type ProfileService struct {
@@ -32,7 +32,7 @@ func New(profile Profile, log *slog.Logger) *ProfileService {
 	}
 }
 
-func (m *ProfileService) GetProfiles(ctx context.Context, person models.GetPerson) ([]models.Person, error) {
+func (m *ProfileService) TakeProfiles(ctx context.Context, person models.GetPerson) ([]models.Person, error) {
 	const op = "service.music.GetProfiles"
 
 	log := m.log.With(
@@ -43,7 +43,7 @@ func (m *ProfileService) GetProfiles(ctx context.Context, person models.GetPerso
 
 	log.Info("getting profiles")
 
-	profiles, err := m.profile.GetProfiles(ctx, person)
+	profiles, err := m.profile.TakeProfiles(ctx, person)
 	if err != nil {
 		if errors.Is(err, storage.ErrProfilesNotFound) {
 			log.Warn("profiles not found")
@@ -61,7 +61,7 @@ func (m *ProfileService) GetProfiles(ctx context.Context, person models.GetPerso
 	return profiles, nil
 }
 
-func (m *ProfileService) DeleteProfile(ctx context.Context, person models.DeletePerson) ([]byte, error) {
+func (m *ProfileService) RemoveProfile(ctx context.Context, person models.DeletePerson) ([]byte, error) {
 	const op = "service.music.DeleteProfile"
 
 	log := m.log.With(
@@ -71,7 +71,7 @@ func (m *ProfileService) DeleteProfile(ctx context.Context, person models.Delete
 
 	log.Info("deleting profile")
 
-	guid, err := m.profile.DeleteProfile(ctx, person)
+	guid, err := m.profile.RemoveProfile(ctx, person)
 	if err != nil {
 		if errors.Is(err, storage.ErrProfileNotFound) {
 			log.Warn("profile not found")
@@ -121,7 +121,7 @@ func (m *ProfileService) UpdateProfile(ctx context.Context, person models.Update
 	return id, nil
 }
 
-func (m *ProfileService) NewProfile(ctx context.Context, person models.NewPerson) ([]byte, error) {
+func (m *ProfileService) NewProfile(ctx context.Context, person models.EnrichedPerson) ([]byte, error) {
 	const op = "service.music.NewProfile"
 
 	log := m.log.With(

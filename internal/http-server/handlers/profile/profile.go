@@ -6,6 +6,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
@@ -16,17 +17,11 @@ import (
 	"github.com/stepan41k/Effective-Mobile/internal/service"
 )
 
-const (
-	ageAPI         = "https://api.agify.io/?name="
-	genderAPI      = "https://api.genderize.io/?name="
-	nationalizeAPI = "https://api.nationalize.io/?name="
-)
-
 type Profile interface {
-	GetProfiles(ctx context.Context, profile models.GetPerson) (profiles []models.Person, err error)
-	DeleteProfile(ctx context.Context, profile models.DeletePerson) (guid []byte, err error)
+	TakeProfiles(ctx context.Context, profile models.GetPerson) (profiles []models.Person, err error)
+	RemoveProfile(ctx context.Context, profile models.DeletePerson) (guid []byte, err error)
 	UpdateProfile(ctx context.Context, profile models.UpdatedPerson) (guid []byte, err error)
-	NewProfile(ctx context.Context, profile models.NewPerson) (guid []byte, err error)
+	NewProfile(ctx context.Context, profile models.EnrichedPerson) (guid []byte, err error)
 }
 
 type ProfileHandler struct {
@@ -41,6 +36,12 @@ func New(profile Profile, log *slog.Logger) *ProfileHandler {
 	}
 }
 
+const (
+	EnvAge = "AGE_API"
+	EnvGender = "GENDER_API"
+	EnvNationalize = "NATIONALIZE_API"
+)
+
 // @Summary Get
 // @Tags profile
 // @Description Accepts filters and outputs profiles based on them
@@ -53,9 +54,9 @@ func New(profile Profile, log *slog.Logger) *ProfileHandler {
 // @Failure 500 {object} response.ErrorResponse
 // @Failure default {object} response.ErrorResponse
 // @Router /get [post]
-func (m *ProfileHandler) GetProfiles(ctx context.Context) http.HandlerFunc {
+func (m *ProfileHandler) TakeProfiles(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "http.handlers.profile.GetProfiles"
+		const op = "http.handlers.profile.TakeProfile"
 
 		log := m.log.With(
 			slog.String("op", op),
@@ -70,7 +71,7 @@ func (m *ProfileHandler) GetProfiles(ctx context.Context) http.HandlerFunc {
 			return
 		}
 
-		profiles, err := m.profile.GetProfiles(ctx, req)
+		profiles, err := m.profile.TakeProfiles(ctx, req)
 		if err != nil {
 			if errors.Is(err, service.ErrProfilesNotFound) {
 				log.Warn("profiles not found")
@@ -114,9 +115,9 @@ func (m *ProfileHandler) GetProfiles(ctx context.Context) http.HandlerFunc {
 // @Failure 500 {object} response.ErrorResponse
 // @Failure default {object} response.ErrorResponse
 // @Router /delete [delete]
-func (m *ProfileHandler) DeleteProfile(ctx context.Context) http.HandlerFunc {
+func (m *ProfileHandler) RemoveProfile(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "http.handlers.music.DeleteProfile"
+		const op = "http.handlers.music.RemoveProfile"
 
 		log := m.log.With(
 			slog.String("op", op),
@@ -131,7 +132,7 @@ func (m *ProfileHandler) DeleteProfile(ctx context.Context) http.HandlerFunc {
 			return
 		}
 
-		guid, err := m.profile.DeleteProfile(ctx, req)
+		guid, err := m.profile.RemoveProfile(ctx, req)
 		if err != nil {
 			if errors.Is(err, service.ErrProfileNotFound) {
 				log.Warn("profile not found")
@@ -262,6 +263,7 @@ func (m *ProfileHandler) NewProfile(ctx context.Context) http.HandlerFunc {
 		)
 
 		var req models.NewPerson
+		var profile models.EnrichedPerson
 
 		err := render.Decode(r, &req)
 		flag := CheckForErrors(req, w, r, log, err)
@@ -270,7 +272,7 @@ func (m *ProfileHandler) NewProfile(ctx context.Context) http.HandlerFunc {
 		}
 
 		var age models.Age
-		ageReq, err := http.Get(ageAPI + req.Name)
+		ageReq, err := http.Get(os.Getenv(EnvAge) + req.Name)
 		if err != nil {
 			log.Error("failed to get age")
 
@@ -285,10 +287,10 @@ func (m *ProfileHandler) NewProfile(ctx context.Context) http.HandlerFunc {
 		}
 
 		render.DecodeJSON(ageReq.Body, &age)
-		req.Age = age.Age
+		profile.Age = age.Age
 
 		var gender models.Gender
-		genderReq, err := http.Get(genderAPI + req.Name)
+		genderReq, err := http.Get(os.Getenv(EnvGender) + req.Name)
 		if err != nil {
 			log.Error("failed to get gender")
 
@@ -303,10 +305,10 @@ func (m *ProfileHandler) NewProfile(ctx context.Context) http.HandlerFunc {
 		}
 
 		render.DecodeJSON(genderReq.Body, &gender)
-		req.Gender = gender.Gender
+		profile.Gender = gender.Gender
 
 		var nationalize models.Nationalize
-		nationalizeReq, err := http.Get(nationalizeAPI + req.Name)
+		nationalizeReq, err := http.Get(os.Getenv(EnvNationalize) + req.Name)
 		if err != nil {
 			log.Error("failed to get nationalize")
 
@@ -321,9 +323,16 @@ func (m *ProfileHandler) NewProfile(ctx context.Context) http.HandlerFunc {
 		}
 
 		render.DecodeJSON(nationalizeReq.Body, &nationalize)
-		req.Nationalize = nationalize.Country[0].CountryID
+		profile.Nationalize = nationalize.Country[0].CountryID
 
-		guid, err := m.profile.NewProfile(ctx, req)
+		profile.GUID = req.GUID
+		profile.Name = req.Name
+		profile.Surname = req.Surname
+		profile.Patronymic = req.Patronymic
+
+		log.Info(profile.Name, profile.Surname, profile.Patronymic, profile.Gender, profile.Nationalize)
+
+		guid, err := m.profile.NewProfile(ctx, profile)
 		if err != nil {
 			log.Error("internal error", sl.Err(err))
 

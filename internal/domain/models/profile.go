@@ -14,9 +14,16 @@ type NewPerson struct {
 	Name        string `json:"name" validate:"required,min=1,max=20" example:"Igor"`
 	Surname     string `json:"surname" validate:"required,min=1,max=30" example:"Zaycev"`
 	Patronymic  string `json:"patronymic,omitempty" validate:"omitempty,min=1,max=25" example:"Vladimirovich"`
-	Age         int    `json:"age,omitempty" validate:"omitempty,gte=0,lte=130"`
-	Gender      string `json:"gender,omitempty" validate:"omitempty,max=6"`
-	Nationalize string `json:"nationalize,omitempty" validate:"omitempty,max=10"`
+}
+
+type EnrichedPerson struct {
+	GUID        string `json:"guid"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	Patronymic  string `json:"patronymic"`
+	Age         int    `json:"age"`
+	Gender      string `json:"gender"`
+	Nationalize string `json:"nationalize"`
 }
 
 type GetPerson struct {

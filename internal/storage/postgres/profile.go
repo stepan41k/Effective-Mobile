@@ -12,7 +12,7 @@ import (
 )
 
 
-func (s *PStorage) GetProfiles(ctx context.Context, person models.GetPerson) ([]models.Person, error) {
+func (s *PStorage) TakeProfiles(ctx context.Context, person models.GetPerson) ([]models.Person, error) {
 	const op = "storage.postgres.profile.GetProfiles"
 
 	tx, err := s.pool.Begin(ctx)
@@ -110,7 +110,7 @@ func (s *PStorage) GetProfiles(ctx context.Context, person models.GetPerson) ([]
 }
 
 
-func (s *PStorage) DeleteProfile(ctx context.Context, person models.DeletePerson) (guid []byte, err error) {
+func (s *PStorage) RemoveProfile(ctx context.Context, person models.DeletePerson) (guid []byte, err error) {
 	const op = "storage.postgres.profile.DeleteProfile"
 
 	tx, err := s.pool.Begin(ctx)
@@ -229,7 +229,7 @@ func (s *PStorage) UpdateProfile(ctx context.Context, person models.UpdatedPerso
 }
 
 
-func (s *PStorage) NewProfile(ctx context.Context, person models.NewPerson) (guid []byte, err error) {
+func (s *PStorage) NewProfile(ctx context.Context, person models.EnrichedPerson) (guid []byte, err error) {
 	const op = "storage.postgres.profile.NewProfile"
 
 	tx, err := s.pool.Begin(ctx)
